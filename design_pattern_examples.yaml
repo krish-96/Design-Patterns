@@ -1,0 +1,712 @@
+patterns:
+  - name: Singleton Pattern
+    description: |
+      Ensures a class has only one instance and provides a global point of access to it.
+    example: |
+      class Singleton:
+          _instance = None
+
+          def __new__(cls):
+              if not cls._instance:
+                  cls._instance = super().__new__(cls)
+              return cls._instance
+
+      # Usage
+      singleton1 = Singleton()
+      singleton2 = Singleton()
+      print(singleton1 is singleton2)  # Output: True
+
+  - name: Builder Pattern
+    description: |
+      Helps in constructing complex objects step by step. It separates the construction of a complex object from its representation.
+    example: |
+      class Director:
+          def __init__(self, builder):
+              self._builder = builder
+
+          def construct(self):
+              self._builder.build_part_a()
+              self._builder.build_part_b()
+
+      class Builder:
+          def build_part_a(self):
+              pass
+
+          def build_part_b(self):
+              pass
+
+      class ConcreteBuilder(Builder):
+          def build_part_a(self):
+              print("Building part A")
+
+          def build_part_b(self):
+              print("Building part B")
+
+      # Usage
+      builder = ConcreteBuilder()
+      director = Director(builder)
+      director.construct()
+
+  - name: Factory Method Pattern
+    description: |
+      Defines an interface for creating an object, but lets subclasses decide which class to instantiate.
+    example: |
+      from abc import ABC, abstractmethod
+
+      class Creator(ABC):
+          @abstractmethod
+          def factory_method(self):
+              pass
+
+          def some_operation(self):
+              product = self.factory_method()
+              result = f"Creator: The same creator's code has just worked with {product.operation()}"
+
+      class ConcreteCreator1(Creator):
+          def factory_method(self):
+              return ConcreteProduct1()
+
+      class ConcreteCreator2(Creator):
+          def factory_method(self):
+              return ConcreteProduct2()
+
+      class Product(ABC):
+          @abstractmethod
+          def operation(self):
+              pass
+
+      class ConcreteProduct1(Product):
+          def operation(self):
+              return "{Result of ConcreteProduct1}"
+
+      class ConcreteProduct2(Product):
+          def operation(self):
+              return "{Result of ConcreteProduct2}"
+
+      # Usage
+      creator = ConcreteCreator1()
+      print(creator.some_operation())
+
+  - name: Abstract Factory Pattern
+    description: |
+      Provides an interface to create families of related or dependent objects without specifying their concrete classes.
+    example: |
+      from abc import ABC, abstractmethod
+
+      class AbstractFactory(ABC):
+          @abstractmethod
+          def create_product_a(self):
+              pass
+
+          @abstractmethod
+          def create_product_b(self):
+              pass
+
+      class ConcreteFactory1(AbstractFactory):
+          def create_product_a(self):
+              return ConcreteProductA1()
+
+          def create_product_b(self):
+              return ConcreteProductB1()
+
+      class ConcreteFactory2(AbstractFactory):
+          def create_product_a(self):
+              return ConcreteProductA2()
+
+          def create_product_b(self):
+              return ConcreteProductB2()
+
+      class AbstractProductA(ABC):
+          @abstractmethod
+          def useful_function_a(self):
+              pass
+
+      class ConcreteProductA1(AbstractProductA):
+          def useful_function_a(self):
+              return "The result of the product A1."
+
+      class ConcreteProductA2(AbstractProductA):
+          def useful_function_a(self):
+              return "The result of the product A2."
+
+      class AbstractProductB(ABC):
+          @abstractmethod
+          def useful_function_b(self):
+              pass
+
+      class ConcreteProductB1(AbstractProductB):
+          def useful_function_b(self):
+              return "The result of the product B1."
+
+      class ConcreteProductB2(AbstractProductB):
+          def useful_function_b(self):
+              return "The result of the product B2."
+
+      # Usage
+      factory1 = ConcreteFactory1()
+      product_a1 = factory1.create_product_a()
+      product_b1 = factory1.create_product_b()
+
+  - name: Prototype Pattern
+    description: |
+      Allows an object to create customized objects without knowing their class or any details of how to create them.
+    example: |
+      import copy
+
+      class Prototype:
+          def __init__(self):
+              self._objects = {}
+
+          def register_object(self, name, obj):
+              self._objects[name] = obj
+
+          def unregister_object(self, name):
+              del self._objects[name]
+
+          def clone(self, name, **attrs):
+              obj = copy.deepcopy(self._objects.get(name))
+              obj.__dict__.update(attrs)
+              return obj
+
+      class ConcreteObject:
+          def __init__(self, name):
+              self.name = name
+
+      # Usage
+      prototype = Prototype()
+      obj1 = ConcreteObject('Object 1')
+      prototype.register_object('obj1', obj1)
+      obj2 = prototype.clone('obj1', name='Object 2')
+
+  - name: Adapter Pattern
+    description: |
+      Allows objects with incompatible interfaces to work together by providing a wrapper with a compatible interface.
+    example: |
+      class Target:
+          def request(self):
+              return "Target: The default target's behavior."
+
+      class Adaptee:
+          def specific_request(self):
+              return ".eetpadA eht fo roivaheb laicepS"
+
+      class Adapter(Target):
+          def __init__(self, adaptee):
+              self._adaptee = adaptee
+
+          def request(self):
+              return f"Adapter: (TRANSLATED) {self._adaptee.specific_request()[::-1]}"
+
+      # Usage
+      adaptee = Adaptee()
+      adapter = Adapter(adaptee)
+      print(adapter.request())
+
+  - name: Bridge Pattern
+    description: |
+      Decouples an abstraction from its implementation so that the two can vary independently.
+    example: |
+      class Abstraction:
+          def __init__(self, implementation):
+              self._implementation = implementation
+
+          def operation(self):
+              return f"Abstraction: Base operation with:\n{self._implementation.operation_implementation()}"
+
+      class ExtendedAbstraction(Abstraction):
+          def operation(self):
+              return f"ExtendedAbstraction: Extended operation with:\n{self._implementation.operation_implementation()}"
+
+      class Implementation:
+          def operation_implementation(self):
+              raise NotImplementedError()
+
+      class ConcreteImplementationA(Implementation):
+          def operation_implementation(self):
+              return "ConcreteImplementationA: Here's the result on the platform A."
+
+      class ConcreteImplementationB(Implementation):
+          def operation_implementation(self):
+              return "ConcreteImplementationB: Here's the result on the platform B."
+
+      # Usage
+      implementation = ConcreteImplementationA()
+      abstraction = Abstraction(implementation)
+      print(abstraction.operation())
+
+  - name: Composite Pattern
+    description: |
+      Composes objects into tree structures to represent part-whole hierarchies. It lets clients treat individual objects and compositions of objects uniformly.
+    example: |
+      class Component:
+          def __init__(self, *args, **kwargs):
+              pass
+
+          def add(self, component):
+              pass
+
+          def remove(self, component):
+              pass
+
+          def is_composite(self):
+              return False
+
+          def operation(self):
+              raise NotImplementedError()
+
+      class Leaf(Component):
+          def operation(self):
+              return "Leaf"
+
+      class
+      
+      Composite(Component):
+          def __init__(self):
+              self._children = []
+
+          def add(self, component):
+              self._children.append(component)
+
+          def remove(self, component):
+              self._children.remove(component)
+
+          def is_composite(self):
+              return True
+
+          def operation(self):
+              return f"Branch([{','.join(child.operation() for child in self._children)}])"
+
+      # Usage
+      def client_code(component):
+          print(f"RESULT: {component.operation()}", end="")
+
+      leaf = Leaf()
+      print("Client: I've got a leaf:")
+      client_code(leaf)
+      print("\n")
+
+      tree = Composite()
+
+      branch1 = Composite()
+      branch1.add(Leaf())
+      branch1.add(Leaf())
+
+      branch2 = Composite()
+      branch2.add(Leaf())
+
+      tree.add(branch1)
+      tree.add(branch2)
+
+      print("Client: Now I've got a composite tree:")
+      client_code(tree)
+
+  - name: Decorator Pattern
+    description: |
+      Attaches additional responsibilities to an object dynamically. It provides a flexible alternative to subclassing for extending functionality.
+    example: |
+      class Component:
+          def operation(self):
+              pass
+
+      class ConcreteComponent(Component):
+          def operation(self):
+              return "ConcreteComponent"
+
+      class Decorator(Component):
+          _component = None
+
+          def __init__(self, component):
+              self._component = component
+
+          @property
+          def component(self):
+              return self._component
+
+          def operation(self):
+              return self._component.operation()
+
+      class ConcreteDecoratorA(Decorator):
+          def operation(self):
+              return f"ConcreteDecoratorA({self.component.operation()})"
+
+      class ConcreteDecoratorB(Decorator):
+          def operation(self):
+              return f"ConcreteDecoratorB({self.component.operation()})"
+
+      # Usage
+      simple = ConcreteComponent()
+      print("Client: I've got a simple component:")
+      print(f"RESULT: {simple.operation()}", end="\n\n")
+
+      decorator1 = ConcreteDecoratorA(simple)
+      decorator2 = ConcreteDecoratorB(decorator1)
+      print("Client: Now I've got a decorated component:")
+      print(f"RESULT: {decorator2.operation()}")
+
+  - name: Facade Pattern
+    description: |
+      Provides a simplified interface to a complex system, hiding its complexities from clients.
+    example: |
+      class SubsystemA:
+          def operation1(self):
+              return "SubsystemA: Ready!"
+
+          def operation2(self):
+              return "SubsystemA: Go!"
+
+      class SubsystemB:
+          def operation1(self):
+              return "SubsystemB: Fire!"
+
+          def operation2(self):
+              return "SubsystemB: Aim!"
+
+      class Facade:
+          def __init__(self, subsystem1, subsystem2):
+              self._subsystem1 = subsystem1
+              self._subsystem2 = subsystem2
+
+          def operation(self):
+              results = []
+              results.append("Facade initializes subsystems:")
+              results.append(self._subsystem1.operation1())
+              results.append(self._subsystem2.operation1())
+              results.append("Facade orders subsystems to perform the action:")
+              results.append(self._subsystem1.operation2())
+              results.append(self._subsystem2.operation2())
+              return "\n".join(results)
+
+      # Usage
+      subsystem1 = SubsystemA()
+      subsystem2 = SubsystemB()
+      facade = Facade(subsystem1, subsystem2)
+      print(facade.operation())
+
+  - name: Proxy Pattern
+    description: |
+      Provides a placeholder for another object to control access to it.
+    example: |
+      class Subject:
+          def request(self):
+              pass
+
+      class RealSubject(Subject):
+          def request(self):
+              return "RealSubject: Handling request."
+
+      class Proxy(Subject):
+          _real_subject = None
+
+          def request(self):
+              if not self._real_subject:
+                  self._real_subject = RealSubject()
+              return f"Proxy: Checking access...\n{self._real_subject.request()}"
+
+      # Usage
+      proxy = Proxy()
+      print(proxy.request())
+
+  - name: Observer Pattern
+    description: |
+      Defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.
+    example: |
+      from __future__ import annotations
+      from abc import ABC, abstractmethod
+      from typing import List
+
+      class Subject(ABC):
+          _state = None
+          _observers: List[Observer] = []
+
+          def attach(self, observer: Observer):
+              self._observers.append(observer)
+
+          def detach(self, observer: Observer):
+              self._observers.remove(observer)
+
+          def notify(self):
+              for observer in self._observers:
+                  observer.update(self)
+
+          @property
+          def state(self):
+              return self._state
+
+          @state.setter
+          def state(self, state):
+              self._state = state
+              self.notify()
+
+      class Observer(ABC):
+          @abstractmethod
+          def update(self, subject: Subject):
+              pass
+
+      class ConcreteSubject(Subject):
+          def __init__(self, state=None):
+              self._state = state
+
+      class ConcreteObserverA(Observer):
+          def update(self, subject: Subject):
+              if subject.state < 3:
+                  print("ConcreteObserverA: Reacted to the event")
+
+      class ConcreteObserverB(Observer):
+          def update(self, subject: Subject):
+              if subject.state == 0 or subject.state >= 2:
+                  print("ConcreteObserverB: Reacted to the event")
+
+      # Usage
+      subject = ConcreteSubject()
+      observer1 = ConcreteObserverA()
+      observer2 = ConcreteObserverB()
+
+      subject.attach(observer1)
+      subject.attach(observer2)
+
+      subject.state = 1
+      subject.state = 2
+      subject.state = 3
+
+  - name: Strategy Pattern
+    description: |
+      Defines a family of algorithms, encapsulates each one, and makes them interchangeable. It lets the algorithm vary independently from clients that use it.
+    example: |
+      from __future__ import annotations
+      from abc import ABC, abstractmethod
+      from typing import List
+
+      class Strategy(ABC):
+          @abstractmethod
+          def do_algorithm(self, data: List):
+              pass
+
+      class ConcreteStrategyA(Strategy):
+          def do_algorithm(self, data: List):
+              return sorted(data)
+
+      class ConcreteStrategyB(Strategy):
+          def do_algorithm(self, data: List):
+              return reversed(sorted(data))
+
+      class Context:
+          def __init__(self, strategy: Strategy):
+              self._strategy = strategy
+
+          def set_strategy(self, strategy: Strategy):
+              self._strategy = strategy
+
+          def do_some_business_logic(self):
+              data = [1, 3, 2, 5, 4]
+              result = self._strategy.do_algorithm(data)
+              return result
+
+      # Usage
+      context = Context(ConcreteStrategyA())
+      print("Client: Strategy is set to normal sorting.")
+      result = context.do_some_business_logic()
+      print(",".join(map(str, result)))
+
+      print("\n")
+      print("Client: Strategy is set to reverse sorting.")
+      context.set_strategy(ConcreteStrategyB())
+      result = context.do_some_business_logic()
+      print(",".join(map(str, result)))
+
+  - name: State Pattern
+    description: |
+      Allows an object to alter its behavior when its internal state changes. The object will appear to change its class.
+    example: |
+      from __future__ import annotations
+      from abc import ABC, abstractmethod
+      from typing import Any
+
+      class State(ABC):
+          @abstractmethod
+          def handle(self):
+              pass
+
+      class ConcreteStateA(State):
+          def handle(self):
+              return "ConcreteStateA"
+
+      class ConcreteStateB(State):
+          def handle(self):
+              return "ConcreteStateB"
+
+      class Context:
+          _state: State = None
+
+          def __init__(self, state: State):
+              self.transition_to(state)
+
+          def transition_to(self, state: State):
+              self._state = state
+              self._state.context = self
+
+          def request(self):
+              return self._state.handle()
+
+      # Usage
+      context = Context(ConcreteStateA())
+      print(context.request())
+
+  - name: Template Method Pattern
+    description: |
+      Defines the skeleton of an algorithm in a method, deferring some steps to subclasses. It lets subclasses redefine certain steps of an algorithm without changing the algorithm's structure.
+    example: |
+      from abc import ABC, abstractmethod
+
+      class AbstractClass(ABC):
+          def template_method(self) -> None:
+              self.base_operation1()
+              self.required_operation1()
+              self.base_operation2()
+              self.hook1()
+              self.required_operation2()
+              self.base_operation3()
+              self.hook2()
+
+          def base_operation1(self) -> None:
+              print("AbstractClass says: I am doing the bulk of the work")
+
+          def base_operation2(self) -> None:
+              print("AbstractClass says: But I let subclasses override some operations")
+
+          def base_operation3(self) -> None:
+              print("AbstractClass says: But I am doing the bulk of the work anyway")
+
+          @abstractmethod
+          def required_operation1(self) -> None:
+              pass
+
+          @abstractmethod
+          def required_operation2(self) -> None:
+              pass
+
+          def hook1(self) -> None:
+              pass
+
+          def hook2(self) -> None:
+              pass
+
+      class ConcreteClass1(AbstractClass):
+          def required_operation1(self) -> None:
+              print("ConcreteClass1 says: Implemented Operation1")
+
+          def required_operation2(self) -> None:
+              print("ConcreteClass1 says: Implemented Operation2")
+
+      class ConcreteClass2(AbstractClass):
+          def required_operation1(self) -> None:
+              print("ConcreteClass2 says: Implemented Operation1")
+
+          def required_operation2(self) -> None:
+              print("ConcreteClass2 says: Implemented Operation2")
+              print("ConcreteClass2 says: Overridden Hook")
+
+          def hook1(self) -> None:
+              print("ConcreteClass2 says: Overridden Hook1")
+
+      # Usage
+      def client_code(abstract_class: AbstractClass) -> None:
+          abstract_class.template_method()
+
+      print("Same client code can work with different subclasses:")
+      client_code(ConcreteClass1())
+      print("\n")
+      print("Same client code can work with different subclasses:")
+      client_code(ConcreteClass2())
+  - name: Chain of Responsibility Pattern
+    description: Avoids coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. It chains the receiving objects and passes the request along the chain until an object handles it.
+
+    example: |
+      from abc import ABC, abstractmethod
+  
+      class Handler(ABC):
+          def __init__(self, successor=None):
+              self._successor = successor
+  
+          @abstractmethod
+          def handle_request(self, request):
+              pass
+  
+      class ConcreteHandler1(Handler):
+          def handle_request(self, request):
+              if request == 'handle1':
+                  return 'Handled by Handler 1'
+              elif self._successor is not None:
+                  return self._successor.handle_request(request)
+              else:
+                  return 'Request cannot be handled'
+  
+      class ConcreteHandler2(Handler):
+          def handle_request(self, request):
+              if request == 'handle2':
+                  return 'Handled by Handler 2'
+              elif self._successor is not None:
+                  return self._successor.handle_request(request)
+              else:
+                  return 'Request cannot be handled'
+  
+      class Client:
+          def __init__(self):
+              self.handler = ConcreteHandler1(ConcreteHandler2())
+  
+          def make_request(self, request):
+              return self.handler.handle_request(request)
+  
+      if __name__ == '__main__':
+          client = Client()
+          print(client.make_request('handle1'))
+          print(client.make_request('handle2'))
+          print(client.make_request('handle3'))
+
+  - name: Command Pattern
+    description: |
+      Encapsulates a request as an object, thereby allowing for parameterization of clients with different requests, queuing of requests, and logging of requests.
+
+    example: |
+      from abc import ABC, abstractmethod
+  
+      class Command(ABC):
+          @abstractmethod
+          def execute(self):
+              pass
+  
+      class ConcreteCommand(Command):
+          def __init__(self, receiver):
+              self._receiver = receiver
+  
+          def execute(self):
+              return self._receiver.action()
+  
+      class Receiver:
+          def action(self):
+              return "Receiver is doing something."
+  
+      class Invoker:
+          def __init__(self):
+              self._commands = []
+  
+          def add_command(self, command):
+              self._commands.append(command)
+  
+          def execute_commands(self):
+              results = []
+              for command in self._commands:
+                  results.append(command.execute())
+              return results
+  
+      if __name__ == '__main__':
+          receiver = Receiver()
+          command1 = ConcreteCommand(receiver)
+          command2 = ConcreteCommand(receiver)
+  
+          invoker = Invoker()
+          invoker.add_command(command1)
+          invoker.add_command(command2)
+  
+          results = invoker.execute_commands()
+          for result in results:
+              print(result)
